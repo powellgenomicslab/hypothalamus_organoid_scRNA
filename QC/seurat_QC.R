@@ -144,6 +144,43 @@ umap_condition_split <- DimPlot(seurat_sub, group.by = "pool", split.by = "pool"
 
 umap_cell_cycle <- DimPlot(seurat_sub, group.by = "phases")
 
+### Make a reference from ENSG IDs to Gene IDs ###
+GeneConversion <- fread("/directflow/SCCGGroupShare/projects/DrewNeavin/Parkinsons_TH_Collab/data/GEX/GEX_WT_TH/features.tsv.gz", header = F, sep = "\t")
+GeneConversion$V3 <- NULL
+colnames(GeneConversion) <- c("ENSG_ID", "Gene_ID")
+
+
+
+##### Check for features of interest #####
+
+### Make a reference from ENSG IDs to Gene IDs ###
+GeneConversion <- fread("/directflow/SCCGGroupShare/projects/DrewNeavin/Parkinsons_TH_Collab/data/GEX/GEX_WT_TH/features.tsv.gz", header = F, sep = "\t")
+GeneConversion$V3 <- NULL
+colnames(GeneConversion) <- c("ENSG_ID", "Gene_ID")
+
+
+
+##### Check for features of interest #####
+markers <- fread("genes_of_interest.tsv") ### List of markers tested can be found in supplementar tables for this manuscript
+
+genes_dir <- paste0(outdir_filtered, "genes_of_interest/")
+dir.create(genes_dir)
+
+
+for (gene in unique(markers$ENSG)){
+	if (gene %in% rownames(seurat_sub)){
+		gene_name <- GeneConversion[ENSG_ID == gene]$Gene_ID
+		if(!file.exists(paste0(genes_dir,gene_name,"_umap.png"))){
+			plot <- FeaturePlot(seurat_sub, features = gene) + labs(title = gene_name)
+			ggsave(plot, filename = paste0(genes_dir,gene_name,"_umap.png"))
+		}
+		if(!file.exists(paste0(genes_dir,gene_name,"_umap_nebulosa.png"))){
+			density_plot <- plot_density(seurat_sub, gene, pal = "plasma") + labs(title = gene_name)
+			ggsave(density_plot, filename = paste0(genes_dir,gene_name,"_umap_nebulosa.png"))
+		}
+	}
+}
+
 
 th_tdtomato <- FeaturePlot(object = seurat_sub,
 	order = TRUE,

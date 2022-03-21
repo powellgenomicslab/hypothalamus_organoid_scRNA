@@ -47,6 +47,31 @@ for (resolution in c(seq(0.01,0.09,0.01),seq(0.1,2, by = 0.1))){
 }
 
 
+
+##### Make figures with markers to identify cell types #####
+### General Markers ###
+markers <- fread("genes_of_interest.tsv") ### List of markers tested can be found in supplementar tables for this manuscript
+
+marker_dir <- paste0(outdir, "markers/")
+dir.create(marker_dir)
+
+DefaultAssay(seurat_integrated_new_sct) <- "RNA"
+
+for (gene in unique(markers$Gene)){
+	if (gene %in% rownames(seurat_integrated_new_sct)){
+		if(!file.exists(paste0(marker_dir,gene,"_umap.png"))){
+			umap <- FeaturePlot(seurat_integrated_new_sct, features = gene) + labs(title = gene)
+			ggsave(umap, filename = paste0(marker_dir, gene,"_umap_seurat_sub.png"))
+		}
+		if(!file.exists(paste0(marker_dir,gene,"_umap_nebulosa.png"))){
+			density_plot <- plot_density(seurat_integrated_new_sct, gene, pal = "plasma") + labs(title = gene)
+			ggsave(density_plot, filename = paste0(marker_dir,gene,"_umap_nebulosa.png"))
+		}
+	}
+}
+
+
+
 ##### Separate neurons and non-neurons and remake umap + cluster #####
 seurat_integrated_new_sct_list <- list()
 
@@ -114,6 +139,10 @@ seurat_integrated_neuron_nonneuron_list <- lapply(seurat_integrated_neuron_nonne
 seurat_integrated_sct_neuron_nonneuron_subset_list <- list()
 plot_list <- list()
 
+	### General Markers ###
+	markers <- fread("genes_of_interest.tsv") ### List of markers tested can be found in supplementar tables for this manuscript
+
+
 
 for( x in names(seurat_integrated_neuron_nonneuron_list)){
 	clust_dir <- paste0(outdir,x,"/Clustering/")
@@ -129,6 +158,25 @@ for( x in names(seurat_integrated_neuron_nonneuron_list)){
 		plot_list[[x]][[as.character(resolution)]] <- DimPlot(seurat_integrated_sct_neuron_nonneuron_subset_list[[x]][[as.character(resolution)]], reduction = "umap", label = TRUE, repel = TRUE)
 
 		ggsave(plot_list[[x]][[as.character(resolution)]], filename = paste0(clust_dir, x, "_Integrated_clusters_resolution_",resolution, ".png"))
+	}
+
+	marker_dir_neuron_nonneuron <- paste0(outdir,x,"markers/")
+	dir.create(marker_dir_neuron_nonneuron)
+
+	##### Make figures with markers to identify cell types #####
+	DefaultAssay(seurat_integrated_neuron_nonneuron_list[[x]]) <-  "RNA"
+
+	for (gene in unique(markers$Gene)){
+		if (gene %in% rownames(seurat_integrated_neuron_nonneuron_list[[x]])){
+			if(!file.exists(paste0(marker_dir_neuron_nonneuron,gene,"_umap.png"))){
+				umap <- FeaturePlot(seurat_integrated_neuron_nonneuron_list[[x]], features = gene) + labs(title = gene)
+				ggsave(umap, filename = paste0(marker_dir_neuron_nonneuron, gene,"_umap_seurat_sub.png"))
+			}
+			if(!file.exists(paste0(marker_dir_neuron_nonneuron,gene,"_umap_nebulosa.png"))){
+				density_plot <- plot_density(seurat_integrated_neuron_nonneuron_list[[x]], gene, pal = "plasma") + labs(title = gene)
+				ggsave(density_plot, filename = paste0(marker_dir_neuron_nonneuron,gene,"_umap_nebulosa.png"))
+			}
+		}
 	}
 }
 
@@ -185,7 +233,30 @@ for( x in names(seurat_integrated_nonneuron_list)){
 
 		ggsave(plot_list[[x]][[as.character(resolution)]], filename = paste0(clust_dir, x, "_Integrated_clusters_resolution_",resolution, ".png"))
 	}
+
+
+	marker_dir_nonneurons <- paste0(outdir,"non-neurons/",x,"markers/")
+	dir.create(marker_dir_neuron_nonneuron)
+
+	##### Make figures with markers to identify cell types #####
+	DefaultAssay(seurat_integrated_nonneuron_list[[x]]) <-  "RNA"
+
+	for (gene in unique(markers$Gene)){
+		if (gene %in% rownames(seurat_integrated_nonneuron_list[[x]])){
+			if(!file.exists(paste0(marker_dir_nonneurons,gene,"_umap.png"))){
+				umap <- FeaturePlot(seurat_integrated_nonneuron_list[[x]], features = gene) + labs(title = gene)
+				ggsave(umap, filename = paste0(marker_dir_nonneurons, gene,"_umap_seurat_sub.png"))
+			}
+			if(!file.exists(paste0(marker_dir_nonneurons,gene,"_umap_nebulosa.png"))){
+				density_plot <- plot_density(seurat_integrated_nonneuron_list[[x]], gene, pal = "plasma") + labs(title = gene)
+				ggsave(density_plot, filename = paste0(marker_dir_nonneurons,gene,"_umap_nebulosa.png"))
+			}
+		}
+	}
 }
+
+
+
 
 
 ### Finalize cell type annotations

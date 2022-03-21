@@ -1,6 +1,6 @@
 #############################
 ### Author: Drew  Neavin
-### Reason: Use scPred to predict cell types in the hypothalamus organoids
+### Reason: Use clustering to identify neuron cell types in the hypothalamus organoids
 #############################
 library(data.table)
 library(Seurat)
@@ -46,6 +46,35 @@ for (resolution in c(seq(0.01,0.09,0.01),seq(0.1,2, by = 0.1))){
 	plot_list[[as.character(resolution)]] <- DimPlot(seurat_updated_list[[as.character(resolution)]], reduction = "umap", label = TRUE, repel = TRUE)
 
 	ggsave(plot_list[[as.character(resolution)]], filename = paste0(clust_dir, "Unassigned_clusters_resolution_",resolution, ".png"))
+}
+
+
+
+##### Make figures with markers #####
+### General Markers ###
+markers <- fread("genes_of_interest.tsv") ### List of markers tested can be found in supplementar tables for this manuscript
+
+
+neuron_marker_dir <- paste0(outdir, "markers/")
+dir.create(neuron_marker_dir)
+
+DefaultAssay(seurat_updated) <- "RNA"
+
+for (gene in unique(markers$ENSG_ID)){
+    gene_id <- markers[ENSG_ID == gene]$Gene
+	if (gene %in% rownames(seurat_updated)){
+		if (rowSums(seurat_updated[gene,]) > 0){
+			if(!file.exists(paste0(neuron_marker_dir,gene_id,"_umap_seurat_sub.png"))){
+				print(gene_id)
+				umap <- FeaturePlot(seurat_updated, features = gene) + labs(title = gene_id)
+				ggsave(umap, filename = paste0(neuron_marker_dir, gene_id,"_umap_seurat_sub.png"))
+			}
+			if(!file.exists(paste0(neuron_marker_dir,gene_id,"_umap_nebulosa.png"))){
+				density_plot <- plot_density(seurat_updated, gene, pal = "plasma", reduction = "umap") + labs(title = gene_id)
+				ggsave(density_plot, filename = paste0(neuron_marker_dir,gene_id,"_umap_nebulosa.png"))
+			}
+		}
+	}
 }
 
 ### Resolution 1.7 was the most appropriate for the neurons ###
@@ -145,7 +174,7 @@ for (clust_anno in grep("\\.", cluster_anno_dt$Cluster_Name, value = TRUE)){
 
 
 
-##### Add in subclustering #####
+##### Add in subclustering annotations #####
 subclusters <- fread(paste0(outdir,"cluster_annotations_subcluster.tsv"))
 subclusters$Cluster <- factor(subclusters$Cluster)
 
