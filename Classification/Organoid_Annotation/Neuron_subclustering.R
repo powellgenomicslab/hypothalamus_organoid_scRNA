@@ -12,7 +12,7 @@ library(Nebulosa)
 
 ##### Set up Directories #####
 dir <- "/path/to/base/directory/"
-datadir <- paste0(dir, "output/Classification/annotation/")
+datadir <- paste0(dir, "output/Classification/scPred/")
 outdir <- paste0(dir,"output/Classification/Neuron_Clustering/")
 
 dir.create(outdir, recursive = TRUE)
@@ -21,8 +21,9 @@ dir.create(outdir, recursive = TRUE)
 
 
 ##### Read in the data #####
-##### Subset unassigned and cluster for cluster-based annotation #####
-seurat <- readRDS(paste0(datadir, "integrated_refs_sct_reannotated_singlets.rds"))
+seurat <- readRDS(paste0(datadir, "seurat_broad_classifications.rds"))
+
+seurat_updated <- subset(seurat, subset = CellType == "Neuron")
 
 
 

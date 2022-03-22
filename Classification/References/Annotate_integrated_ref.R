@@ -186,7 +186,7 @@ for( x in names(seurat_integrated_neuron_nonneuron_list)){
 Idents(seurat_integrated_neuron_nonneuron_list[["neurons"]]) <- Idents(seurat_integrated_sct_neuron_nonneuron_subset_list[["neurons"]][["1.9"]])
 seurat_integrated_neuron_nonneuron_list[["neurons"]]$CellType <- ifelse((Idents(seurat_integrated_neuron_nonneuron_list[["neurons"]]) %in% c(21,40,58)), "IPCs", "Neurons")
 
-non_neuron_class <- data.frame(ident = seq(0,11), CellType = c("Astrocytes & Radial Glia", "OPC",  "Oligodendrocytes", "Radial Glial Cells","Tanycytes & Radial Glia", "Astrocytes", "Ependymal Cells", "Immature Oligodendrocytes & Oligodendrocytes", "Microglia", "Endothelial", "VLMCs & Unknown", "Astrocytes"))
+non_neuron_class <- data.frame(ident = seq(0,11), CellType = c("Astrocytes & Radial Glia", "OPCs",  "Oligodendrocytes", "Radial Glial Cells","Tanycytes & Radial Glia", "Astrocytes", "Ependymal Cells", "Immature Oligodendrocytes & Oligodendrocytes", "Microglia", "Endothelial Cells", "VLMCs & Unknown", "Astrocytes"))
 non_neuron_class <- data.frame(left_join(data.frame(ident = as.numeric(as.character(Idents(seurat_integrated_sct_neuron_nonneuron_subset_list[["non-neurons"]][["0.2"]])))), non_neuron_class))
 rownames(non_neuron_class) <- colnames(seurat_integrated_sct_neuron_nonneuron_subset_list[["non-neurons"]][["0.2"]])
 
@@ -263,8 +263,8 @@ for( x in names(seurat_integrated_nonneuron_list)){
 seurat_integrated_nonneuron_list[["Astrocytes & Radial Glia"]]$CellType <- ifelse(Idents(seurat_integrated_sct_nonneuron_subset_list[["Astrocytes & Radial Glia"]][["0.2"]]) == 3, "Radial Glial Cells", "Astrocytes")
 seurat_integrated_nonneuron_list[["Immature Oligodendrocytes & Oligodendrocytes"]]$CellType <- ifelse(Idents(seurat_integrated_sct_nonneuron_subset_list[["Immature Oligodendrocytes & Oligodendrocytes"]][["1.5"]]) %in% c(1,6,8), "Oligodendrocytes", "Immature Oligodendrocytes")
 seurat_integrated_nonneuron_list[["Tanycytes & Radial Glia"]]$CellType <- ifelse(Idents(seurat_integrated_sct_nonneuron_subset_list[["Tanycytes & Radial Glia"]][["0.7"]]) %in% c(0,4), "Tanycytes", 
-																	ifelse(Idents(seurat_integrated_sct_nonneuron_subset_list[["Tanycytes & Radial Glia"]][["0.7"]]) == 2, "Vascular & Leptomeningeninal Cells (VLMCs)", "Radial Glial Cells"))
-seurat_integrated_nonneuron_list[["VLMCs & Unknown"]]$CellType <- ifelse(Idents(seurat_integrated_sct_nonneuron_subset_list[["VLMCs & Unknown"]][["0.02"]]) == 0, "Vascular & Leptomeningeninal Cells (VLMCs)", "Radial Glial Cells")
+																	ifelse(Idents(seurat_integrated_sct_nonneuron_subset_list[["Tanycytes & Radial Glia"]][["0.7"]]) == 2, "VLMCs", "Radial Glial Cells"))
+seurat_integrated_nonneuron_list[["VLMCs & Unknown"]]$CellType <- ifelse(Idents(seurat_integrated_sct_nonneuron_subset_list[["VLMCs & Unknown"]][["0.02"]]) == 0, "VLMCs", "Radial Glial Cells")
 
 
 
