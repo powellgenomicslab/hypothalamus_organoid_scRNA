@@ -96,7 +96,7 @@ seurat_DNs_selected <- seurat_DNs_list[["0.8"]]
 idents <- data.table(Barcode = colnames(seurat_DNs_selected), Idents = as.character(Idents(seurat_DNs_selected)))
 
 
-DN_subtype_table <- cluster_classifications[idents, on = "Idents"]
+DN_subtype_table <- cluster_classifications[,c("Idents", "DN_CellType")][idents, on = "Idents"]
 
 DN_subtype_table <- data.frame(DN_subtype_table)
 rownames(DN_subtype_table) <- DN_subtype_table$Barcode
@@ -107,12 +107,17 @@ seurat_DNs_selected <- AddMetaData(seurat_DNs_selected, DN_subtype_table)
 
 saveRDS(seurat_DNs_selected, paste0(outdir, "seurat_DNs_classified.rds"))
 
+DN_colors <- cluster_classifications$Color
+names(DN_colors) <- cluster_classifications$DN_CellType
+
 
 ##### Make UMAP #####
 umap_DNs <- DimPlot(seurat_DNs_selected, group.by = "DN_CellType", label = TRUE, repel = TRUE) +
 				ggtitle("Dopaminergic Neuron\nSubtypes") +
 				xlab("UMAP 1") +
-				xlab("UMAP 2")
+				ylab("UMAP 2") +
+				scale_color_manual(values = DN_colors)
+					
 						
 ggsave(umap_DNs, filename = paste0(outdir,"umap_DNs_", Sys.Date(), ".png"), width = 5, height = 3.5)
 ggsave(umap_DNs, filename = paste0(outdir,"umap_DNs_", Sys.Date(), ".pdf"), width = 5, height = 3.5)
@@ -122,7 +127,9 @@ ggsave(umap_DNs, filename = paste0(outdir,"umap_DNs_", Sys.Date(), ".pdf"), widt
 umap_DNs_no_lab <- DimPlot(seurat_DNs_selected, group.by = "DN_CellType", label = FALSE, repel = TRUE) +
 				ggtitle("Dopaminergic Neuron\nSubtypes") +
 				xlab("UMAP 1") +
-				xlab("UMAP 2")
+				ylab("UMAP 2") +
+				scale_color_manual(values = DN_colors)
+
 
 ggsave(umap_DNs_no_lab, filename = paste0(outdir,"umap_DNs_no_label_", Sys.Date(), ".png"), width = 5, height = 3.5)
 ggsave(umap_DNs_no_lab, filename = paste0(outdir,"umap_DNs_no_label_", Sys.Date(), ".pdf"), width = 5, height = 3.5)
