@@ -168,7 +168,3 @@ umap_orig_no_lab <- DimPlot(seurat_annotated, group.by = "Broad_Neurons", label 
 
 
 
-
-
-
-
